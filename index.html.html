@@ -1,0 +1,238 @@
+<!-- Celestial Networks Staff Roster - Auto-fetching from Google Sheets -->
+<!-- Paste into: AdminCP > Pages > Page Management > Pages > [Roster Page] > Edit > HTML tab -->
+
+<div class="cnr-wrap">
+  <div class="cnr-header">
+    <img src="https://media.invisioncic.com/a334757/set_resources_3/logo_white_main.png?_cb=1777194171" class="cnr-logo" alt="Celestial Networks" />
+    <h1>Celestial <span>Networks</span></h1>
+    <p class="cnr-subtitle">Staff Roster</p>
+    <p class="cnr-updated" id="cnr-updated">Loading roster...</p>
+  </div>
+
+  <div class="cnr-nav">
+    <button class="cnr-btn cnr-cw cnr-active" onclick="cnrShow('cw', this)">Clone Wars RP</button>
+    <button class="cnr-btn cnr-imp" onclick="cnrShow('imp', this)">Imperial RP</button>
+    <button class="cnr-btn cnr-dev" onclick="cnrShow('dev', this)">Development</button>
+  </div>
+
+  <div class="cnr-section cnr-active" id="cnr-cw">
+    <div class="cnr-loading" id="cnr-cw-loading"><div class="cnr-spinner"></div><p>Fetching Clone Wars roster...</p></div>
+    <div id="cnr-cw-content"></div>
+  </div>
+  <div class="cnr-section" id="cnr-imp">
+    <div class="cnr-loading" id="cnr-imp-loading"><div class="cnr-spinner"></div><p>Fetching Imperial roster...</p></div>
+    <div id="cnr-imp-content"></div>
+  </div>
+  <div class="cnr-section" id="cnr-dev">
+    <div class="cnr-loading" id="cnr-dev-loading"><div class="cnr-spinner"></div><p>Fetching Development roster...</p></div>
+    <div id="cnr-dev-content"></div>
+  </div>
+</div>
+
+<script>
+(function() {
+  var SHEETS = {
+    cw:  'https://docs.google.com/spreadsheets/d/e/2PACX-1vRwxbNHj9OXK2eSxwXLeFgdMvZo-kQIptcJfd9u2gJR2OowOnGAoKEOZKr9ChPK8ruscfVUv03E5ED1/pub?gid=1184250700&single=true&output=csv',
+    imp: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRwxbNHj9OXK2eSxwXLeFgdMvZo-kQIptcJfd9u2gJR2OowOnGAoKEOZKr9ChPK8ruscfVUv03E5ED1/pub?gid=502024218&single=true&output=csv',
+    dev: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRwxbNHj9OXK2eSxwXLeFgdMvZo-kQIptcJfd9u2gJR2OowOnGAoKEOZKr9ChPK8ruscfVUv03E5ED1/pub?gid=1982304147&single=true&output=csv'
+  };
+
+  var TIER_LABELS = ['Executive Staff','Executives','Server Management','Management','Senior Staff','Admins / Event Masters','Moderators','Junior Event Masters','Developer Management','Development Team','Design & Marketing Team'];
+
+  var TIER_META = {
+    'Executive Staff':         { label: 'Executive Staff',        pip: 'exec'   },
+    'Executives':              { label: 'Executive Staff',        pip: 'exec'   },
+    'Server Management':       { label: 'Server Management',      pip: 'ops'    },
+    'Management':              { label: 'Server Management',      pip: 'ops'    },
+    'Senior Staff':            { label: 'Senior Staff',           pip: 'senior' },
+    'Admins / Event Masters':  { label: 'Admins & Event Masters', pip: 'ops'    },
+    'Moderators':              { label: 'Moderators',             pip: 'ops'    },
+    'Junior Event Masters':    { label: 'Junior Event Masters',   pip: 'ops'    },
+    'Developer Management':    { label: 'Development Leadership', pip: 'dev'    },
+    'Development Team':        { label: 'Development Team',       pip: 'dev'    },
+    'Design & Marketing Team': { label: 'Design & Marketing',     pip: 'dev'    }
+  };
+
+  var RANK_BADGE = {
+    'Network Executive':      { badge: 'EXEC', cls: 'badge-exec',   av: 'av-exec'   },
+    'Network Director':       { badge: 'DIR',  cls: 'badge-dir',    av: 'av-dir'    },
+    'Server Manager':         { badge: 'SM',   cls: 'badge-ops',    av: 'av-ops'    },
+    'Head Administrator':     { badge: 'HA',   cls: 'badge-ops',    av: 'av-ops'    },
+    'Head Event Master':      { badge: 'HEM',  cls: 'badge-ops',    av: 'av-ops'    },
+    'Senior Administrator':   { badge: 'SA',   cls: 'badge-senior', av: 'av-senior' },
+    'Senior Event Master':    { badge: 'SEM',  cls: 'badge-senior', av: 'av-senior' },
+    ' Senior Event Master':   { badge: 'SEM',  cls: 'badge-senior', av: 'av-senior' },
+    'Administrator':          { badge: 'ADM',  cls: 'badge-ops',    av: 'av-ops'    },
+    'Event Master':           { badge: 'EM',   cls: 'badge-ops',    av: 'av-ops'    },
+    'Event Master ':          { badge: 'EM',   cls: 'badge-ops',    av: 'av-ops'    },
+    'Moderator':              { badge: 'MOD',  cls: 'badge-ops',    av: 'av-ops'    },
+    'Junior Event Master':    { badge: 'JEM',  cls: 'badge-ops',    av: 'av-ops'    },
+    'Junior Event Master ':   { badge: 'JEM',  cls: 'badge-ops',    av: 'av-ops'    },
+    'Development Leadership': { badge: 'DL',   cls: 'badge-dev',    av: 'av-dev'    },
+    'Developer':              { badge: 'DEV',  cls: 'badge-dev',    av: 'av-dev'    },
+    'Designer':               { badge: 'GFX',  cls: 'badge-gfx',    av: 'av-gfx'    }
+  };
+
+  var RATING_CLS = {
+    'Very Good': 'cnr-vg', 'Good': 'cnr-good', 'Average': 'cnr-avg',
+    'Below Average': 'cnr-below', 'Needs Improvement': 'cnr-below'
+  };
+
+  function parseCSV(text) {
+    var rows = [], lines = text.split('\n');
+    for (var i = 0; i < lines.length; i++) {
+      var line = lines[i].trim();
+      if (!line) continue;
+      var cols = [], cur = '', inQ = false;
+      for (var c = 0; c < line.length; c++) {
+        var ch = line[c];
+        if (ch === '"') { inQ = !inQ; }
+        else if (ch === ',' && !inQ) { cols.push(cur.trim()); cur = ''; }
+        else { cur += ch; }
+      }
+      cols.push(cur.trim());
+      rows.push(cols);
+    }
+    return rows;
+  }
+
+  function clean(s) { return (s || '').trim(); }
+
+  function isTierRow(row) {
+    var first = clean(row[0]) || clean(row[1]) || clean(row[2]);
+    for (var i = 0; i < TIER_LABELS.length; i++) {
+      if (first === TIER_LABELS[i]) return TIER_LABELS[i];
+    }
+    return null;
+  }
+
+  function ratingBadge(label, value) {
+    var v = clean(value);
+    if (!v || v === 'N / A' || v === 'N/A' || v === 'Bald' || v === 'Balding' || v === 'Ginger' || v === 'Hair Intact?' || v.indexOf('Norwood') > -1) return '';
+    var cls = RATING_CLS[v] || 'cnr-avg';
+    return '<span class="cnr-rating ' + cls + '">' + label + ': ' + v + '</span>';
+  }
+
+  function buildCard(row) {
+    var name     = clean(row[2]);
+    var rank     = clean(row[3]);
+    var alias    = clean(row[5]);
+    var role     = clean(row[6]);
+    var discord  = clean(row[7]);
+    var perf     = clean(row[8]);
+    var activity = clean(row[9]);
+
+    if (!name || name === 'N/A' || name === 'N / A' || name === '---' || name === 'Name') return '';
+
+    var isVacant = (name.toUpperCase() === 'VACANT');
+    var rankKey  = rank.trim();
+    var meta     = RANK_BADGE[rankKey] || RANK_BADGE[rank] || { badge: rankKey.substring(0,3).toUpperCase(), cls: 'badge-ops', av: 'av-ops' };
+
+    var initial = isVacant ? '?' : name.charAt(0).toUpperCase();
+    var avCls   = isVacant ? 'av-vacant' : meta.av;
+    var topCls  = (meta.cls === 'badge-exec' || meta.cls === 'badge-dir') ? 'cnr-exec-top'
+                : (meta.cls === 'badge-dev'  || meta.cls === 'badge-gfx') ? 'cnr-dev-top'
+                : 'cnr-ops-top';
+
+    var pr = ratingBadge('Perf', perf);
+    var ar = ratingBadge('Activity', activity);
+    var ratings = (pr || ar) && !isVacant ? '<div class="cnr-ratings">' + pr + ar + '</div>' : '';
+
+    var discordHtml = (discord && discord !== 'VACANT' && discord !== 'N/A' && discord !== 'N / A')
+      ? '<div class="cnr-meta"><span class="cnr-discord">' + discord + '</span></div>' : '';
+    var aliasHtml = (alias && alias !== 'VACANT' && alias !== 'N/A' && alias !== 'N / A')
+      ? '<p class="cnr-alias">' + alias + '</p>' : '';
+    var roleHtml  = role ? '<p class="cnr-role">' + role + '</p>' : '';
+
+    return '<div class="cnr-card' + (isVacant ? ' cnr-vacant' : '') + '">'
+      + '<div class="cnr-card-top ' + topCls + '">'
+      + '<span class="cnr-rank-badge cnr-' + meta.cls + '">' + meta.badge + '</span>'
+      + '<div class="cnr-avatar cnr-' + avCls + '">' + initial + '</div>'
+      + '</div>'
+      + '<div class="cnr-card-body">'
+      + '<h3>' + name + '</h3>'
+      + '<p class="cnr-rank-label">' + rank + '</p>'
+      + roleHtml + aliasHtml + ratings + discordHtml
+      + '</div></div>';
+  }
+
+  function buildSection(rows) {
+    var html = '', gridCards = '';
+    var skipValues = ['Celestial Networks | Server Operations Branch','Celestial Networks | Development Branch','Name',''];
+
+    function flushGrid() {
+      if (gridCards) { html += '<div class="cnr-grid">' + gridCards + '</div>'; gridCards = ''; }
+    }
+
+    for (var i = 0; i < rows.length; i++) {
+      var row = rows[i];
+      var tier = isTierRow(row);
+      if (tier) {
+        flushGrid();
+        var tm = TIER_META[tier] || { label: tier, pip: 'ops' };
+        html += '<div class="cnr-tier-header">'
+          + '<div class="cnr-th-pip cnr-pip-' + tm.pip + '"></div>'
+          + '<div><h2>' + tm.label + '</h2></div>'
+          + '</div>';
+        continue;
+      }
+      var name = clean(row[2]);
+      var skip = false;
+      for (var s = 0; s < skipValues.length; s++) { if (name === skipValues[s]) { skip = true; break; } }
+      if (skip) continue;
+      var card = buildCard(row);
+      if (card) gridCards += card;
+    }
+    flushGrid();
+    return html;
+  }
+
+  function fetchSheet(key, callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', SHEETS[key], true);
+    xhr.onload = function() {
+      if (xhr.status === 200) callback(null, parseCSV(xhr.responseText));
+      else callback('HTTP ' + xhr.status);
+    };
+    xhr.onerror = function() { callback('Network error'); };
+    xhr.send();
+  }
+
+  function renderSheet(key, rows) {
+    var loading = document.getElementById('cnr-' + key + '-loading');
+    var content = document.getElementById('cnr-' + key + '-content');
+    if (loading) loading.style.display = 'none';
+    if (content) content.innerHTML = buildSection(rows);
+  }
+
+  function init() {
+    var keys = ['cw', 'imp', 'dev'], done = 0;
+    keys.forEach(function(key) {
+      fetchSheet(key, function(err, rows) {
+        done++;
+        if (err) {
+          var el = document.getElementById('cnr-' + key + '-loading');
+          if (el) el.innerHTML = '<p style="color:#f77e7e;">Failed to load roster. Please refresh.</p>';
+        } else {
+          renderSheet(key, rows);
+        }
+        if (done === keys.length) {
+          var now = new Date();
+          var el = document.getElementById('cnr-updated');
+          if (el) el.textContent = 'Last updated: ' + now.toLocaleDateString([], {day:'numeric',month:'short',year:'numeric'}) + ' at ' + now.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+        }
+      });
+    });
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+})();
+
+function cnrShow(id, btn) {
+  document.querySelectorAll('.cnr-section').forEach(function(s) { s.classList.remove('cnr-active'); });
+  document.querySelectorAll('.cnr-btn').forEach(function(b) { b.classList.remove('cnr-active'); });
+  document.getElementById('cnr-' + id).classList.add('cnr-active');
+  btn.classList.add('cnr-active');
+}
+</script>
