@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Celestial Networks - Staff Roster</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Inter:wght@300;400;500&display=swap');
+html, body { margin: 0; padding: 0; background: #0d0d12; }
+.cnr-wrap * { box-sizing: border-box; margin: 0; padding: 0; }
+.cnr-wrap {
+  --cnr-gold: #b06aff; --cnr-dark: #0d0d12; --cnr-surface: #13131c;
+  --cnr-surface2: #1a1a28; --cnr-border: rgba(255,255,255,0.07);
+  --cnr-text: #e8e4f0; --cnr-muted: #8a85a0;
+  background: var(--cnr-dark); color: var(--cnr-text);
+  font-family: 'Inter','Segoe UI',system-ui,sans-serif; font-size: 14px;
+  line-height: 1.6; max-width: 960px; margin: 0 auto; padding: 2rem 1.5rem 4rem;
+}
+.cnr-header { text-align: center; padding: 3rem 0 2.5rem; border-bottom: 1px solid var(--cnr-border); margin-bottom: 2.5rem; }
+.cnr-logo { width: 80px; height: 80px; margin-bottom: 1.25rem; }
+.cnr-header h1 { font-family:'Rajdhani','Trebuchet MS',sans-serif; font-size: 2rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #fff; line-height: 1.1; }
+.cnr-header h1 span { color: var(--cnr-gold); }
+.cnr-subtitle { font-size: 12px; color: var(--cnr-muted); margin-top: 0.75rem; letter-spacing: 0.05em; text-transform: uppercase; }
+.cnr-updated { font-size: 11px; color: var(--cnr-muted); margin-top: 0.5rem; letter-spacing: 0.04em; }
+.cnr-nav { display: flex; gap: 6px; margin-bottom: 2.5rem; background: var(--cnr-surface); padding: 6px; border-radius: 10px; border: 1px solid var(--cnr-border); }
+.cnr-btn { flex: 1; padding: 10px 8px; border: 1px solid transparent; background: transparent; color: var(--cnr-muted); font-family:'Rajdhani','Trebuchet MS',sans-serif; font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; border-radius: 7px; transition: all 0.2s; }
+.cnr-btn:hover { color: var(--cnr-text); background: var(--cnr-surface2); }
+.cnr-btn.cnr-active { background: var(--cnr-surface2); color: #fff; border-color: var(--cnr-border); }
+.cnr-btn.cnr-cw.cnr-active { color: #7eb8f7; border-color: rgba(126,184,247,0.3); }
+.cnr-btn.cnr-imp.cnr-active { color: #f77e7e; border-color: rgba(247,126,126,0.3); }
+.cnr-btn.cnr-dev.cnr-active { color: #e06030; border-color: rgba(180,60,20,0.4); }
+.cnr-section { display: none; }
+.cnr-section.cnr-active { display: block; }
+.cnr-tier-header { display: flex; align-items: stretch; gap: 14px; margin: 2rem 0 1.25rem; }
+.cnr-th-pip { width: 4px; align-self: stretch; border-radius: 2px; flex-shrink: 0; }
+.cnr-pip-exec { background: linear-gradient(180deg,#b06aff,#6020c0); }
+.cnr-pip-ops  { background: linear-gradient(180deg,#5b8fd9,#2960b0); }
+.cnr-pip-senior { background: linear-gradient(180deg,#d4b800,#a08800); }
+.cnr-pip-dev  { background: linear-gradient(180deg,#e06030,#b03010); }
+.cnr-tier-header h2 { font-family:'Rajdhani','Trebuchet MS',sans-serif; font-size: 1.2rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #fff; }
+.cnr-tier-header p { font-size: 12px; color: var(--cnr-muted); margin-top: 2px; }
+.cnr-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(200px,1fr)); gap: 10px; margin-bottom: 0.5rem; }
+.cnr-card { background: var(--cnr-surface); border: 1px solid var(--cnr-border); border-radius: 10px; overflow: hidden; transition: border-color 0.2s, transform 0.15s; }
+.cnr-card:hover { border-color: rgba(255,255,255,0.15); transform: translateY(-2px); }
+.cnr-card.cnr-vacant { opacity: 0.45; }
+.cnr-card-top { padding: 14px 14px 10px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--cnr-border); }
+.cnr-exec-top { background: rgba(100,30,180,0.08); }
+.cnr-ops-top  { background: rgba(41,98,185,0.08); }
+.cnr-dev-top  { background: rgba(180,60,20,0.08); }
+.cnr-rank-badge { font-family:'Rajdhani','Trebuchet MS',sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; padding: 3px 8px; border-radius: 5px; }
+.cnr-badge-exec   { background: rgba(100,30,180,0.2);   color: #b06aff; border: 1px solid rgba(138,43,226,0.4); }
+.cnr-badge-dir    { background: rgba(230,120,30,0.2);   color: #f0821e; border: 1px solid rgba(230,120,30,0.4); }
+.cnr-badge-ops    { background: rgba(41,98,185,0.18);   color: #5b8fd9; border: 1px solid rgba(41,98,185,0.4); }
+.cnr-badge-senior { background: rgba(200,170,20,0.18);  color: #d4b800; border: 1px solid rgba(200,170,20,0.4); }
+.cnr-badge-dev    { background: rgba(180,60,20,0.2);    color: #e06030; border: 1px solid rgba(180,60,20,0.4); }
+.cnr-badge-gfx    { background: rgba(41,98,185,0.18);   color: #5b8fd9; border: 1px solid rgba(41,98,185,0.4); }
+.cnr-avatar { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family:'Rajdhani','Trebuchet MS',sans-serif; font-size: 16px; font-weight: 700; flex-shrink: 0; }
+.cnr-av-exec   { background: rgba(100,30,180,0.2);   color: #b06aff; }
+.cnr-av-dir    { background: rgba(230,120,30,0.2);   color: #f0821e; }
+.cnr-av-ops    { background: rgba(41,98,185,0.2);    color: #5b8fd9; }
+.cnr-av-senior { background: rgba(200,170,20,0.2);   color: #d4b800; }
+.cnr-av-dev    { background: rgba(180,60,20,0.2);    color: #e06030; }
+.cnr-av-gfx    { background: rgba(41,98,185,0.2);    color: #5b8fd9; }
+.cnr-av-vacant { background: rgba(255,255,255,0.05); color: var(--cnr-muted); }
+.cnr-card-body { padding: 12px 14px 14px; }
+.cnr-card-body h3 { font-family:'Rajdhani','Trebuchet MS',sans-serif; font-size: 15px; font-weight: 700; letter-spacing: 0.05em; color: #fff; text-transform: uppercase; }
+.cnr-rank-label { font-size: 11px; color: var(--cnr-muted); margin-top: 1px; }
+.cnr-role  { font-size: 11px; color: var(--cnr-muted); margin-top: 1px; }
+.cnr-alias { font-size: 11px; color: rgba(232,228,240,0.5); margin-top: 3px; font-style: italic; }
+.cnr-ratings { display: flex; flex-direction: column; gap: 4px; margin-top: 8px; }
+.cnr-rating { font-size: 10px; font-weight: 500; padding: 2px 8px; border-radius: 4px; display: inline-block; width: fit-content; }
+.cnr-vg    { background: rgba(143,207,126,0.12); color: #8fcf7e; }
+.cnr-good  { background: rgba(126,184,247,0.12); color: #7eb8f7; }
+.cnr-avg   { background: rgba(201,168,76,0.12);  color: #c9a84c; }
+.cnr-below { background: rgba(247,126,126,0.12); color: #f77e7e; }
+.cnr-meta { margin-top: 8px; }
+.cnr-discord { font-size: 10px; color: var(--cnr-muted); background: var(--cnr-surface2); padding: 2px 8px; border-radius: 4px; display: inline-block; }
+.cnr-discord::before { content: '@ '; opacity: 0.5; }
+.cnr-loading { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 3rem; color: var(--cnr-muted); font-size: 13px; }
+.cnr-spinner { width: 28px; height: 28px; border: 2px solid var(--cnr-border); border-top-color: var(--cnr-gold); border-radius: 50%; animation: cnr-spin 0.8s linear infinite; }
+@keyframes cnr-spin { to { transform: rotate(360deg); } }
+/* Extended tier colours */
+.cnr-badge-mgmt  { background: rgba(100,15,30,0.25);   color: #b84050; border: 1px solid rgba(140,25,45,0.5); }
+.cnr-badge-head  { background: rgba(180,60,20,0.22);   color: #e06030; border: 1px solid rgba(180,60,20,0.45); }
+.cnr-badge-staff { background: rgba(41,98,185,0.18);   color: #5b8fd9; border: 1px solid rgba(41,98,185,0.4); }
+.cnr-badge-light { background: rgba(100,160,230,0.15); color: #7eb8f7; border: 1px solid rgba(100,160,230,0.35); }
+.cnr-badge-tan   { background: rgba(160,130,80,0.2);   color: #c8a870; border: 1px solid rgba(160,130,80,0.4); }
+.cnr-av-mgmt     { background: rgba(100,15,30,0.25);   color: #b84050; }
+.cnr-av-head     { background: rgba(180,60,20,0.22);   color: #e06030; }
+.cnr-av-staff    { background: rgba(41,98,185,0.2);    color: #5b8fd9; }
+.cnr-av-light    { background: rgba(100,160,230,0.15); color: #7eb8f7; }
+.cnr-av-tan      { background: rgba(160,130,80,0.2);   color: #c8a870; }
+.cnr-head-top    { background: rgba(180,60,20,0.06); }
+.cnr-senior-top  { background: rgba(200,170,20,0.06); }
+.cnr-light-top   { background: rgba(100,160,230,0.06); }
+.cnr-tan-top     { background: rgba(160,130,80,0.06); }
+
+</style>
+</head>
+<body>
+ 
+<div class="cnr-wrap">
+  <div class="cnr-header">
+    <img src="https://media.invisioncic.com/a334757/set_resources_3/logo_white_main.png?_cb=1777194171" class="cnr-logo" alt="Celestial Networks" />
+    <h1>Celestial <span>Networks</span></h1>
+    <p class="cnr-subtitle">Staff Roster</p>
+    <p class="cnr-updated" id="cnr-updated">Loading roster...</p>
+  </div>
+ 
+  <div class="cnr-nav">
+    <button class="cnr-btn cnr-cw cnr-active" onclick="cnrShow('cw', this)">Clone Wars RP</button>
+    <button class="cnr-btn cnr-imp" onclick="cnrShow('imp', this)">Imperial RP</button>
+    <button class="cnr-btn cnr-dev" onclick="cnrShow('dev', this)">Development</button>
+  </div>
+ 
+  <div class="cnr-section cnr-active" id="cnr-cw">
+    <div class="cnr-loading" id="cnr-cw-loading"><div class="cnr-spinner"></div><p>Fetching Clone Wars roster...</p></div>
+    <div id="cnr-cw-content"></div>
+  </div>
+  <div class="cnr-section" id="cnr-imp">
+    <div class="cnr-loading" id="cnr-imp-loading"><div class="cnr-spinner"></div><p>Fetching Imperial roster...</p></div>
+    <div id="cnr-imp-content"></div>
+  </div>
+  <div class="cnr-section" id="cnr-dev">
+    <div class="cnr-loading" id="cnr-dev-loading"><div class="cnr-spinner"></div><p>Fetching Development roster...</p></div>
+    <div id="cnr-dev-content"></div>
+  </div>
+</div>
+ 
+<script>
+(function() {
+  var BASE = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRwxbNHj9OXK2eSxwXLeFgdMvZo-kQIptcJfd9u2gJR2OowOnGAoKEOZKr9ChPK8ruscfVUv03E5ED1/pub?single=true&output=csv&gid=';
+  var SHEETS = {
+    cw:  BASE + '1184250700',
+    imp: BASE + '502024218',
+    dev: BASE + '1982304147'
+  };
+ 
+  var TIER_LABELS = ['Executive Staff','Executives','Server Management','Management','Senior Staff','Admins / Event Masters','Moderators','Junior Event Masters','Developer Management','Development Team','Design & Marketing Team'];
+ 
+  var TIER_META = {
+    'Executive Staff':         { label: 'Executive Staff',        pip: 'exec'   },
+    'Executives':              { label: 'Executive Staff',        pip: 'exec'   },
+    'Server Management':       { label: 'Server Management',      pip: 'ops'    },
+    'Management':              { label: 'Server Management',      pip: 'ops'    },
+    'Senior Staff':            { label: 'Senior Staff',           pip: 'senior' },
+    'Admins / Event Masters':  { label: 'Admins & Event Masters', pip: 'ops'    },
+    'Moderators':              { label: 'Moderators',             pip: 'ops'    },
+    'Junior Event Masters':    { label: 'Junior Event Masters',   pip: 'ops'    },
+    'Developer Management':    { label: 'Development Leadership', pip: 'dev'    },
+    'Development Team':        { label: 'Development Team',       pip: 'dev'    },
+    'Design & Marketing Team': { label: 'Design & Marketing',     pip: 'dev'    }
+  };
+ 
+  var RANK_BADGE = {
+    'Network Executive':      { badge: 'EXEC', cls: 'badge-exec',   av: 'av-exec'   },
+    'Network Director':       { badge: 'DIR',  cls: 'badge-dir',    av: 'av-dir'    },
+    'Server Manager':         { badge: 'SM',   cls: 'badge-mgmt',   av: 'av-mgmt'   },
+    'Head Administrator':     { badge: 'HA',   cls: 'badge-head',   av: 'av-head'   },
+    'Head Event Master':      { badge: 'HEM',  cls: 'badge-head',   av: 'av-head'   },
+    'Senior Administrator':   { badge: 'SA',   cls: 'badge-senior', av: 'av-senior' },
+    'Senior Event Master':    { badge: 'SEM',  cls: 'badge-senior', av: 'av-senior' },
+    ' Senior Event Master':   { badge: 'SEM',  cls: 'badge-senior', av: 'av-senior' },
+    'Administrator':          { badge: 'ADM',  cls: 'badge-staff',  av: 'av-staff'  },
+    'Event Master':           { badge: 'EM',   cls: 'badge-staff',  av: 'av-staff'  },
+    'Event Master ':          { badge: 'EM',   cls: 'badge-staff',  av: 'av-staff'  },
+    'Moderator':              { badge: 'MOD',  cls: 'badge-light',  av: 'av-light'  },
+    'Junior Event Master':    { badge: 'JEM',  cls: 'badge-light',  av: 'av-light'  },
+    'Junior Event Master ':   { badge: 'JEM',  cls: 'badge-light',  av: 'av-light'  },
+    'Trial Moderator':        { badge: 'TM',   cls: 'badge-tan',    av: 'av-tan'    },
+    'Trial Event Master':     { badge: 'TEM',  cls: 'badge-tan',    av: 'av-tan'    },
+    'Development Leadership': { badge: 'DL',   cls: 'badge-head',   av: 'av-head'   },
+    'Development Lead':       { badge: 'DL',   cls: 'badge-head',   av: 'av-head'   },
+    'Senior Developer':       { badge: 'SD',   cls: 'badge-senior', av: 'av-senior' },
+    'Senior Designer':        { badge: 'SDS',  cls: 'badge-senior', av: 'av-senior' },
+    'Developer':              { badge: 'DEV',  cls: 'badge-staff',  av: 'av-staff'  },
+    'Designer':               { badge: 'GFX',  cls: 'badge-staff',  av: 'av-staff'  }
+  };
+ 
+  var RATING_CLS = {
+    'Very Good': 'cnr-vg', 'Good': 'cnr-good', 'Average': 'cnr-avg',
+    'Below Average': 'cnr-below', 'Needs Improvement': 'cnr-below'
+  };
+ 
+  function parseCSV(text) {
+    var rows = [], lines = text.split('\n');
+    for (var i = 0; i < lines.length; i++) {
+      var line = lines[i].trim();
+      if (!line) continue;
+      var cols = [], cur = '', inQ = false;
+      for (var c = 0; c < line.length; c++) {
+        var ch = line[c];
+        if (ch === '"') { inQ = !inQ; }
+        else if (ch === ',' && !inQ) { cols.push(cur.trim()); cur = ''; }
+        else { cur += ch; }
+      }
+      cols.push(cur.trim());
+      rows.push(cols);
+    }
+    return rows;
+  }
+ 
+  function clean(s) { return (s || '').trim(); }
+ 
+  function isTierRow(row) {
+    var first = clean(row[0]) || clean(row[1]) || clean(row[2]);
+    for (var i = 0; i < TIER_LABELS.length; i++) {
+      if (first === TIER_LABELS[i]) return TIER_LABELS[i];
+    }
+    return null;
+  }
+ 
+  function ratingBadge(label, value) {
+    var v = clean(value);
+    if (!v || v === 'N / A' || v === 'N/A' || v === 'Bald' || v === 'Balding' || v === 'Ginger' || v === 'Hair Intact?' || v.indexOf('Norwood') > -1) return '';
+    var cls = RATING_CLS[v] || 'cnr-avg';
+    return '<span class="cnr-rating ' + cls + '">' + label + ': ' + v + '</span>';
+  }
+ 
+  function buildCard(row) {
+    var name     = clean(row[2]);
+    var rank     = clean(row[3]);
+    var alias    = clean(row[5]);
+    var role     = clean(row[6]);
+    var discord  = clean(row[7]);
+    var perf     = clean(row[8]);
+    var activity = clean(row[9]);
+ 
+    if (!name || name === 'N/A' || name === 'N / A' || name === '---' || name === 'Name') return '';
+ 
+    var isVacant = (name.toUpperCase() === 'VACANT');
+    var rankKey  = rank.trim();
+    var meta     = RANK_BADGE[rankKey] || RANK_BADGE[rank] || { badge: rankKey.substring(0,3).toUpperCase(), cls: 'badge-ops', av: 'av-ops' };
+ 
+    var initial = isVacant ? '?' : name.charAt(0).toUpperCase();
+    var avCls   = isVacant ? 'av-vacant' : meta.av;
+    var topCls  = (meta.cls === 'badge-exec' || meta.cls === 'badge-dir') ? 'cnr-exec-top'
+                : (meta.cls === 'badge-head' || meta.cls === 'badge-mgmt') ? 'cnr-head-top'
+                : (meta.cls === 'badge-senior') ? 'cnr-senior-top'
+                : (meta.cls === 'badge-light') ? 'cnr-light-top'
+                : (meta.cls === 'badge-tan') ? 'cnr-tan-top'
+                : (meta.cls === 'badge-staff' || meta.cls === 'badge-dev' || meta.cls === 'badge-gfx') ? 'cnr-dev-top'
+                : 'cnr-ops-top';
+ 
+    var pr = ratingBadge('Perf', perf);
+    var ar = ratingBadge('Activity', activity);
+    var ratings = (pr || ar) && !isVacant ? '<div class="cnr-ratings">' + pr + ar + '</div>' : '';
+ 
+    var discordHtml = (discord && discord !== 'VACANT' && discord !== 'N/A' && discord !== 'N / A')
+      ? '<div class="cnr-meta"><span class="cnr-discord">' + discord + '</span></div>' : '';
+    var aliasHtml = (alias && alias !== 'VACANT' && alias !== 'N/A' && alias !== 'N / A')
+      ? '<p class="cnr-alias">' + alias + '</p>' : '';
+    var roleHtml  = role ? '<p class="cnr-role">' + role + '</p>' : '';
+ 
+    return '<div class="cnr-card' + (isVacant ? ' cnr-vacant' : '') + '">'
+      + '<div class="cnr-card-top ' + topCls + '">'
+      + '<span class="cnr-rank-badge cnr-' + meta.cls + '">' + meta.badge + '</span>'
+      + '<div class="cnr-avatar cnr-' + avCls + '">' + initial + '</div>'
+      + '</div>'
+      + '<div class="cnr-card-body">'
+      + '<h3>' + name + '</h3>'
+      + '<p class="cnr-rank-label">' + rank + '</p>'
+      + roleHtml + aliasHtml + ratings + discordHtml
+      + '</div></div>';
+  }
+ 
+  function buildSection(rows) {
+    var html = '', gridCards = '';
+    var skipValues = ['Celestial Networks | Server Operations Branch','Celestial Networks | Development Branch','Name',''];
+ 
+    function flushGrid() {
+      if (gridCards) { html += '<div class="cnr-grid">' + gridCards + '</div>'; gridCards = ''; }
+    }
+ 
+    for (var i = 0; i < rows.length; i++) {
+      var row = rows[i];
+      var tier = isTierRow(row);
+      if (tier) {
+        flushGrid();
+        var tm = TIER_META[tier] || { label: tier, pip: 'ops' };
+        html += '<div class="cnr-tier-header">'
+          + '<div class="cnr-th-pip cnr-pip-' + tm.pip + '"></div>'
+          + '<div><h2>' + tm.label + '</h2></div>'
+          + '</div>';
+        continue;
+      }
+      var name = clean(row[2]);
+      var skip = false;
+      for (var s = 0; s < skipValues.length; s++) { if (name === skipValues[s]) { skip = true; break; } }
+      if (skip) continue;
+      var card = buildCard(row);
+      if (card) gridCards += card;
+    }
+    flushGrid();
+    return html;
+  }
+ 
+  function fetchSheet(key, callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', SHEETS[key], true);
+    xhr.onload = function() {
+      if (xhr.status === 200) callback(null, parseCSV(xhr.responseText));
+      else callback('HTTP ' + xhr.status);
+    };
+    xhr.onerror = function() { callback('Network error'); };
+    xhr.send();
+  }
+ 
+  function renderSheet(key, rows) {
+    var loading = document.getElementById('cnr-' + key + '-loading');
+    var content = document.getElementById('cnr-' + key + '-content');
+    if (loading) loading.style.display = 'none';
+    if (content) content.innerHTML = buildSection(rows);
+  }
+ 
+  function init() {
+    var keys = ['cw', 'imp', 'dev'], done = 0;
+    keys.forEach(function(key) {
+      fetchSheet(key, function(err, rows) {
+        done++;
+        if (err) {
+          var el = document.getElementById('cnr-' + key + '-loading');
+          if (el) el.innerHTML = '<p style="color:#f77e7e;">Failed to load roster. Please refresh.</p>';
+        } else {
+          renderSheet(key, rows);
+        }
+        if (done === keys.length) {
+          var now = new Date();
+          var el = document.getElementById('cnr-updated');
+          if (el) el.textContent = 'Last updated: ' + now.toLocaleDateString([], {day:'numeric',month:'short',year:'numeric'}) + ' at ' + now.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+        }
+      });
+    });
+  }
+ 
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+})();
+ 
+function cnrShow(id, btn) {
+  document.querySelectorAll('.cnr-section').forEach(function(s) { s.classList.remove('cnr-active'); });
+  document.querySelectorAll('.cnr-btn').forEach(function(b) { b.classList.remove('cnr-active'); });
+  document.getElementById('cnr-' + id).classList.add('cnr-active');
+  btn.classList.add('cnr-active');
+}
+</script>
+</body></html>
