@@ -462,5 +462,13 @@ function cnrShow(id,btn){
   btn.classList.add('cnr-active');
 }
 </script>
+  <script>
+function reportHeight() {
+  window.parent.postMessage({ height: document.body.scrollHeight }, '*');
+}
+window.addEventListener('load', reportHeight);
+window.addEventListener('resize', reportHeight);
+new MutationObserver(reportHeight).observe(document.body, { childList: true, subtree: true });
+</script>
 </body>
 </html>
